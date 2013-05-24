@@ -110,7 +110,7 @@ $(function(){
 	$("#youTube-url").on("keyup", TELECAST.onYouTubeChange);
 
 	//Run the change event in case the user has set a value before this executes
-	TELECAST.onYouTubeChange();
+	TELECAST.onYouTubeUrlChange();
 
 	//Set the input field if it's empty and the URL specified one
 	if(TELECAST.videoId && $("#youTube-url").val() == ""){
