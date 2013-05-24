@@ -10,7 +10,7 @@ TELECAST.videoBoundaries = {start: 0, end: Number.MAX_VALUE};
 //Flag for updating handles when loading URL
 TELECAST.shouldUpdateHandles = false;
 
-TELECAST.onYouTubeChange = function(e){
+TELECAST.onYouTubeUrlChange = function(e){
 	var url = $("#youTube-url").val();
 	//This set of characters may change in the future, YouTube makes no promises
 	//TODO: Allow shortened YouTube urls, /v/VIDEO_ID, etc.
@@ -25,20 +25,21 @@ TELECAST.onYouTubeChange = function(e){
 	TELECAST.videoBoundaries = {start: 0, end: Number.MAX_VALUE};
 	TELECAST.updateUrl();
 	$("#youTube-video-id").val(videoId);
-
-	//If the YouTube library hasn't loaded yet then the onYouTubeIframeAPIReady will catch this construction
+	
 	TELECAST.setYouTubePlayer();
 }
 
 TELECAST.setYouTubePlayer = function(){
 	if(!TELECAST.videoId) return;
-	//Replace video
+	
+	//Replace video iframe
 	clearInterval(TELECAST.playTicker);
 	$("#editor-wrapper iframe").remove();
 	$("#editor-wrapper").prepend('<iframe id="ytplayer" type="text/html" width="' + TELECAST.videoWidth + '" height="360" src="https://www.youtube.com/embed/' + TELECAST.videoId +'?enablejsapi=1&autoplay=1&rel=0" frameborder="0" allowfullscreen>');
 	$("#editor-wrapper").show(); //In case it's the first use
 
-	//Set YouTube player to the iframe, if it exists
+	//Set YouTube player to the iframe, if the YouTube library is properly loaded
+	//If the YouTube library hasn't loaded yet then the onYouTubeIframeAPIReady will call this method again when it is
 	if(YT && YT.Player){
 		//Reset start/stop handles
 		$("#start-time,#end-time").css("left", ""); //Clear the draggable left setting
@@ -55,6 +56,7 @@ TELECAST.setYouTubePlayer = function(){
 								TELECAST.youTubePlayer.pauseVideo();
 							}
 
+							//There's no event for metadata being available, so we have to do this
 							//Check if metadata ready and handles need set
 							if(TELECAST.shouldUpdateHandles && TELECAST.youTubePlayer.getDuration() > 0){
 								$("#start-time").css("left", Math.max(TELECAST.videoBoundaries.start/TELECAST.youTubePlayer.getDuration()*TELECAST.videoWidth, 0)+"px");
@@ -65,7 +67,6 @@ TELECAST.setYouTubePlayer = function(){
 
 						}, 500);
 
-						//There's no event for metadata being available, so we have to do this
 
 					}else{
 						clearInterval(TELECAST.playTicker);
@@ -82,6 +83,7 @@ TELECAST.updateUrl = function(){
 
 TELECAST.onPopState = function(e){
 	//Parse the URL to restore hande locations
+	//Format of the hash should be #!VIDEOIDSTART,END
 	var state = location.hash.slice(2);
 	var videoId = state.slice(0,11);
 	if(videoId) TELECAST.videoId = videoId;
@@ -110,7 +112,7 @@ $(function(){
 	//Run the change event in case the user has set a value before this executes
 	TELECAST.onYouTubeChange();
 
-	//Set the input field if it's empty
+	//Set the input field if it's empty and the URL specified one
 	if(TELECAST.videoId && $("#youTube-url").val() == ""){
 		$("#youTube-url").val("http://youtube.com/watch?v=" + TELECAST.videoId);
 		$("#youTube-video-id").val(TELECAST.videoId);
@@ -124,23 +126,26 @@ $(function(){
 		start: function(e){
 			TELECAST.shouldUpdateHandles = false;
 		},
-		drag: function(e){			
+		drag: function(e){		
+			//Set start and end	
 			TELECAST.videoBoundaries.start = $("#start-time").position().left/TELECAST.videoWidth*TELECAST.youTubePlayer.getDuration();
 			TELECAST.videoBoundaries.end = $("#end-time").position().left/TELECAST.videoWidth*TELECAST.youTubePlayer.getDuration();
 
 			TELECAST.updateUrl();
 
+			//Whichever handle was moved we seek to its position
 			TELECAST.youTubePlayer.seekTo($(this).position().left/TELECAST.videoWidth*TELECAST.youTubePlayer.getDuration());
 		}
 	});
 
 	$("#start-time,#end-time").on("click", function(e){
+		//Whichever handle was clicked we seek to its position
 		TELECAST.youTubePlayer.seekTo($(this).position().left/TELECAST.videoWidth*TELECAST.youTubePlayer.getDuration());		
 	});
 
 });
 
-//Youtube Methods
+//YouTube API Required Method
 function onYouTubeIframeAPIReady(e){
 	TELECAST.setYouTubePlayer();
 }
