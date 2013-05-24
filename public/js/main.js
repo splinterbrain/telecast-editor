@@ -1,5 +1,8 @@
 window.TELECAST = window.TELECAST || {};
 
+//Constants
+TELECAST.videoWidth = 640;
+
 //Video information
 TELECAST.videoId = "";
 TELECAST.videoBoundaries = {start: 0, end: Number.MAX_VALUE};
@@ -32,13 +35,13 @@ TELECAST.setYouTubePlayer = function(){
 	//Replace video
 	clearInterval(TELECAST.playTicker);
 	$("#editor-wrapper iframe").remove();
-	$("#editor-wrapper").prepend('<iframe id="ytplayer" type="text/html" width="640" height="360" src="https://www.youtube.com/embed/' + TELECAST.videoId +'?enablejsapi=1&autoplay=1" frameborder="0" allowfullscreen>');
+	$("#editor-wrapper").prepend('<iframe id="ytplayer" type="text/html" width="' + TELECAST.videoWidth + '" height="360" src="https://www.youtube.com/embed/' + TELECAST.videoId +'?enablejsapi=1&autoplay=1" frameborder="0" allowfullscreen>');
 	$("#editor-wrapper").show(); //In case it's the first use
 
 	//Set YouTube player to the iframe, if it exists
 	if(YT && YT.Player){
 		//Reset start/stop handles
-		$("#start-time").css("left", ""); //Clear the draggable left setting
+		$("#start-time,#end-time").css("left", ""); //Clear the draggable left setting
 
 		TELECAST.youTubePlayer = new YT.Player('ytplayer', {
 			events :{
@@ -54,8 +57,9 @@ TELECAST.setYouTubePlayer = function(){
 
 							//Check if metadata ready and handles need set
 							if(TELECAST.shouldUpdateHandles && TELECAST.youTubePlayer.getDuration() > 0){
-								$("#start-time").css("left", Math.max(TELECAST.videoBoundaries.start/TELECAST.youTubePlayer.getDuration()*640, 0)+"px");
-								$("#end-time").css("left", Math.min(TELECAST.videoBoundaries.end/TELECAST.youTubePlayer.getDuration()*640, 640)+"px");
+								$("#start-time").css("left", Math.max(TELECAST.videoBoundaries.start/TELECAST.youTubePlayer.getDuration()*TELECAST.videoWidth, 0)+"px");
+								$("#end-time").css("left", Math.min(TELECAST.videoBoundaries.end/TELECAST.youTubePlayer.getDuration()*TELECAST.videoWidth, TELECAST.videoWidth)+"px");
+								TELECAST.youTubePlayer.seekTo(TELECAST.videoBoundaries.start);
 								TELECAST.shouldUpdateHandles = false;
 							}
 
@@ -122,17 +126,17 @@ $(function(){
 		},
 		drag: function(e){			
 
-			TELECAST.videoBoundaries.start = $("#start-time").position().left/640*TELECAST.youTubePlayer.getDuration();
-			TELECAST.videoBoundaries.end = $("#end-time").position().left/640*TELECAST.youTubePlayer.getDuration();
+			TELECAST.videoBoundaries.start = $("#start-time").position().left/TELECAST.videoWidth*TELECAST.youTubePlayer.getDuration();
+			TELECAST.videoBoundaries.end = $("#end-time").position().left/TELECAST.videoWidth*TELECAST.youTubePlayer.getDuration();
 
 			TELECAST.updateUrl();
 
-			TELECAST.youTubePlayer.seekTo($(this).position().left/640*TELECAST.youTubePlayer.getDuration());
+			TELECAST.youTubePlayer.seekTo($(this).position().left/TELECAST.videoWidth*TELECAST.youTubePlayer.getDuration());
 		}
 	});
 
 	$("#start-time,#end-time").on("click", function(e){
-			TELECAST.youTubePlayer.seekTo($(this).position().left/640*TELECAST.youTubePlayer.getDuration());
+		TELECAST.youTubePlayer.seekTo($(this).position().left/TELECAST.videoWidth*TELECAST.youTubePlayer.getDuration());		
 	});
 
 });
