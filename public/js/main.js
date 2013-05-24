@@ -35,7 +35,7 @@ TELECAST.setYouTubePlayer = function(){
 	//Replace video
 	clearInterval(TELECAST.playTicker);
 	$("#editor-wrapper iframe").remove();
-	$("#editor-wrapper").prepend('<iframe id="ytplayer" type="text/html" width="' + TELECAST.videoWidth + '" height="360" src="https://www.youtube.com/embed/' + TELECAST.videoId +'?enablejsapi=1&autoplay=1" frameborder="0" allowfullscreen>');
+	$("#editor-wrapper").prepend('<iframe id="ytplayer" type="text/html" width="' + TELECAST.videoWidth + '" height="360" src="https://www.youtube.com/embed/' + TELECAST.videoId +'?enablejsapi=1&autoplay=1&rel=0" frameborder="0" allowfullscreen>');
 	$("#editor-wrapper").show(); //In case it's the first use
 
 	//Set YouTube player to the iframe, if it exists
@@ -63,7 +63,7 @@ TELECAST.setYouTubePlayer = function(){
 								TELECAST.shouldUpdateHandles = false;
 							}
 
-						}, 1000);
+						}, 500);
 
 						//There's no event for metadata being available, so we have to do this
 
@@ -125,7 +125,6 @@ $(function(){
 			TELECAST.shouldUpdateHandles = false;
 		},
 		drag: function(e){			
-
 			TELECAST.videoBoundaries.start = $("#start-time").position().left/TELECAST.videoWidth*TELECAST.youTubePlayer.getDuration();
 			TELECAST.videoBoundaries.end = $("#end-time").position().left/TELECAST.videoWidth*TELECAST.youTubePlayer.getDuration();
 
