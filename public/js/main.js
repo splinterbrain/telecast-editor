@@ -106,8 +106,8 @@ $(function(){
 
 
 	//Bindings for youtube input
-	$("#youTube-url").on("change", TELECAST.onYouTubeChange);
-	$("#youTube-url").on("keyup", TELECAST.onYouTubeChange);
+	$("#youTube-url").on("change", TELECAST.onYouTubeUrlChange);
+	$("#youTube-url").on("keyup", TELECAST.onYouTubeUrlChange);
 
 	//Run the change event in case the user has set a value before this executes
 	TELECAST.onYouTubeUrlChange();
