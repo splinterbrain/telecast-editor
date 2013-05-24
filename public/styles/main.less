@@ -1,3 +1,5 @@
+@import "mixins";
+
 html{
 	height: 100%;
 }
@@ -22,11 +24,35 @@ h1{
 }
 
 .panel{
+	.clearfix;
 	padding: 10px;
 	background-color: white;	
 	box-shadow: 0px 0px 0px 3px #dedede;
 	border: 1px solid #aaa;
 	margin-bottom: 20px;
+}
+
+label{
+	margin-right: 8px;
+}
+input{
+	border: 1px solid black;
+	font-size: 12px;
+	padding: 4px;
+	top: -2px;
+	width: 200px;
+	-webkit-appearance: none;
+	&[disabled]{
+		background: #eee;
+		border: none;
+	}
+	&[type=button]{
+		width: 80px;
+	}
+}
+
+#youTube-url{
+	width: 400px;
 }
 
 #editor-wrapper{
@@ -38,18 +64,54 @@ h1{
 	margin: 0px auto;
 }
 
-label{
-	margin-right: 8px;
+#editor-controls{
+	width: 690px;
+	height: 40px;
+	margin: 10px auto;
+	&>.instructions{
+		top: 30px;
+		left: 25px;
+		font-size: 14px;
+		text-align: center;
+	}
 }
-input{
-	border: 1px solid black;
-	font-size: 12px;
+
+#start-time, #end-time{
+	width: 50px;
+	position: absolute;
+	top: 0;
+	color:white;
+	text-align: center;
+	font-weight: bold;
 	padding: 4px;
-	top: -1px;
-	width: 200px;
-	-webkit-appearance: none;
-	&[disabled]{
-		background: #eee;
-		border: none;
+	font-size: 12px;
+	&:hover{
+		cursor: move;
+	}
+	&>.caret{
+		position: absolute;
+		top: -7px;
+		left: 15px;
+		width: 0; 
+		height: 0; 
+		border-left: 10px solid transparent;
+		border-right: 10px solid transparent;	
+		border-bottom: 10px solid black;
+	}
+}
+
+#start-time{
+	background-color: #26b417;
+	left: 0px;
+	&>.caret{
+		border-bottom-color: #26b417;
+	}
+}
+
+#end-time{
+	background-color:#d81c24;
+	right: 0px;
+	&>.caret{
+		border-bottom-color:#d81c24;
 	}
 }

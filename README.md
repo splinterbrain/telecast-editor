@@ -7,4 +7,4 @@ Installation
 --
 For simplicity, LESS files in the public/styles directory need to be compiled using a third party tool, e.g., SimpLESS.
 
-Run the server with ruby.server.rb.
+Run the server with "ruby server.rb".
